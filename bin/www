@@ -29,9 +29,12 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
+io = require('socket.io').listen(server);
+
 server.on('error', onError);
 server.on('listening', onListening);
 
+io.sockets.on('connection', onSocketConnection);
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -90,6 +93,13 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-log.info(bind);
+  log.verbose(bind);
+}
 
+function onSocketConnection(socket) {
+  log.debug('socket connected');
+  socket.emit('news', {hello: 'world'});
+  socket.on('myEvent', (data) => {
+    log.debug(data);
+  })
 }
